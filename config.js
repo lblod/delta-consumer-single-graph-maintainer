@@ -1,47 +1,88 @@
-// CONFIGURATION
-const SYNC_BASE_URL = process.env.SYNC_BASE_URL;
-const SERVICE_NAME = process.env.SERVICE_NAME;
-const SYNC_FILES_PATH = process.env.SYNC_FILES_PATH || '/sync/files';
-const DOWNLOAD_FILE_PATH = process.env.DOWNLOAD_FILE_PATH || '/files/:id/download';
-const INGEST_INTERVAL = process.env.INGEST_INTERVAL || -1;
-const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 100;
-const PUBLIC_GRAPH = process.env.PUBLIC_GRAPH || 'http://mu.semte.ch/graphs/public';
-const INGEST_GRAPH = process.env.INGEST_GRAPH || `http://mu.semte.ch/graphs/public`;
-const START_FROM_DELTA_TIMESTAMP = process.env.START_FROM_DELTA_TIMESTAMP;
-const DELTA_FILE_FOLDER = process.env.DELTA_FILE_FOLDER || '/tmp/';
-const KEEP_DELTA_FILES = process.env.KEEP_DELTA_FILES == 'true';
-const DISABLE_DELTA_INGEST = process.env.DISABLE_DELTA_INGEST == 'true' ? true : false;
+// MANDATORY
 
-if(!SERVICE_NAME) {
-  throw "SERVICE_NAME is required. Please provide one.";
-}
+if(!process.env.SERVICE_NAME)
+  throw `Expected 'SERVICE_NAME' to be provided.`;
+export const SERVICE_NAME = process.env.SERVICE_NAME;
+
+if(!process.env.SYNC_DATASET_SUBJECT)
+  throw `Expected 'SYNC_DATASET_SUBJECT' to be provided.`;
+export const SYNC_DATASET_SUBJECT = process.env.SYNC_DATASET_SUBJECT;
+
+if(!process.env.JOB_CREATOR_URI)
+  throw `Expected 'JOB_CREATOR_URI' to be provided.`;
+export const JOB_CREATOR_URI = process.env.JOB_CREATOR_URI;
+
+if(!process.env.INITIAL_SYNC_JOB_OPERATION)
+  throw `Expected 'INITIAL_SYNC_JOB_OPERATION' to be provided.`;
+export const INITIAL_SYNC_JOB_OPERATION = process.env.INITIAL_SYNC_JOB_OPERATION;
+
+// CONFIGURATION
+
+export const SYNC_BASE_URL = process.env.SYNC_BASE_URL;
+export const SYNC_FILES_PATH = process.env.SYNC_FILES_PATH || '/sync/files';
+export const DOWNLOAD_FILE_PATH = process.env.DOWNLOAD_FILE_PATH || '/files/:id/download';
+export const SYNC_DATASET_PATH = process.env.SYNC_DATASET_PATH || '/datasets';
+export const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 100;
+export const START_FROM_DELTA_TIMESTAMP = process.env.START_FROM_DELTA_TIMESTAMP;
+export const DELTA_FILE_FOLDER = process.env.DELTA_FILE_FOLDER || '/tmp/';
+export const KEEP_DELTA_FILES = process.env.KEEP_DELTA_FILES == 'true';
+export const DISABLE_DELTA_INGEST = process.env.DISABLE_DELTA_INGEST == 'true' ? true : false;
+export const DISABLE_INITIAL_SYNC = process.env.DISABLE_INITIAL_SYNC == 'true' ? true : false;
+export const DUMPFILE_FOLDER = process.env.DUMPFILE_FOLDER || 'consumer/deltas';
+export const MU_CALL_SCOPE_ID_INITIAL_SYNC = process.env.MU_CALL_SCOPE_ID_INITIAL_SYNC || 'http://redpencil.data.gift/id/concept/muScope/deltas/consumer/initialSync';
+export const CRON_PATTERN_DELTA_SYNC = process.env.CRON_PATTERN_DELTA_SYNC || '0 * * * * *'; // every minute
+
+// GRAPHS
+
+export const PUBLIC_GRAPH = process.env.PUBLIC_GRAPH || 'http://mu.semte.ch/graphs/public';
+export const INGEST_GRAPH = process.env.INGEST_GRAPH || `http://mu.semte.ch/graphs/public`;
+export const MU_APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH || 'http://mu.semte.ch/application';
+
+// JOBS & TASKS
+
+export const JOBS_GRAPH = process.env.JOBS_GRAPH || 'http://mu.semte.ch/graphs/system/jobs';
+export const JOB_URI_PREFIX = 'http://redpencil.data.gift/id/job/';
+export const JOB_TYPE = 'http://vocab.deri.ie/cogs#Job';
+export const TASK_URI_PREFIX = 'http://redpencil.data.gift/id/task/';
+export const TASK_TYPE = 'http://redpencil.data.gift/vocabularies/tasks/Task';
+export const INITIAL_SYNC_TASK_OPERATION = 'http://redpencil.data.gift/id/jobs/concept/TaskOperation/deltas/consumer/initialSyncing';
+
+// INTERNAL SYNC TASKS
+
+export const TASK_NOT_STARTED_STATUS = `http://lblod.data.gift/sync-task-statuses/not-started`;
+export const TASK_ONGOING_STATUS = `http://lblod.data.gift/sync-task-statuses/ongoing`;
+export const TASK_SUCCESS_STATUS = `http://lblod.data.gift/sync-task-statuses/success`;
+export const TASK_FAILED_STATUS = `http://lblod.data.gift/sync-task-statuses/failure`;
+
+// STATUS
+
+export const STATUS_BUSY = 'http://redpencil.data.gift/id/concept/JobStatus/busy';
+export const STATUS_SCHEDULED = 'http://redpencil.data.gift/id/concept/JobStatus/scheduled';
+export const STATUS_FAILED = 'http://redpencil.data.gift/id/concept/JobStatus/failed';
+export const STATUS_CANCELED = 'http://redpencil.data.gift/id/concept/JobStatus/canceled';
+export const STATUS_SUCCESS = 'http://redpencil.data.gift/id/concept/JobStatus/success';
 
 // ERRORS
 
-const JOBS_GRAPH = process.env.JOBS_GRAPH || 'http://mu.semte.ch/graphs/system/jobs';
-const ERROR_TYPE= 'http://open-services.net/ns/core#Error';
-const DELTA_ERROR_TYPE = 'http://redpencil.data.gift/vocabularies/deltas/Error';
-const ERROR_URI_PREFIX = 'http://redpencil.data.gift/id/jobs/error/';
+export const ERROR_TYPE= 'http://open-services.net/ns/core#Error';
+export const DELTA_ERROR_TYPE = 'http://redpencil.data.gift/vocabularies/deltas/Error';
+export const ERROR_URI_PREFIX = 'http://redpencil.data.gift/id/jobs/error/';
 
 // STATICS
-const SYNC_FILES_ENDPOINT = `${SYNC_BASE_URL}${SYNC_FILES_PATH}`;
-const DOWNLOAD_FILE_ENDPOINT = `${SYNC_BASE_URL}${DOWNLOAD_FILE_PATH}`;
+export const SYNC_FILES_ENDPOINT = `${SYNC_BASE_URL}${SYNC_FILES_PATH}`;
+export const DOWNLOAD_FILE_ENDPOINT = `${SYNC_BASE_URL}${DOWNLOAD_FILE_PATH}`;
+export const SYNC_DATASET_ENDPOINT = `${SYNC_BASE_URL}${SYNC_DATASET_PATH}`;
 
-export {
-  SERVICE_NAME,
-  INGEST_INTERVAL,
-  SYNC_BASE_URL,
-  SYNC_FILES_ENDPOINT,
-  DOWNLOAD_FILE_ENDPOINT,
-  BATCH_SIZE,
-  PUBLIC_GRAPH,
-  INGEST_GRAPH,
-  START_FROM_DELTA_TIMESTAMP,
-  KEEP_DELTA_FILES,
-  DELTA_FILE_FOLDER,
-  DISABLE_DELTA_INGEST,
-  JOBS_GRAPH,
-  ERROR_TYPE,
-  DELTA_ERROR_TYPE,
-  ERROR_URI_PREFIX
-};
+export const PREFIXES = `
+  PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+  PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
+  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX prov: <http://www.w3.org/ns/prov#>
+  PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+  PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+  PREFIX oslc: <http://open-services.net/ns/core#>
+  PREFIX cogs: <http://vocab.deri.ie/cogs#>
+  PREFIX adms: <http://www.w3.org/ns/adms#>
+  PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
+  PREFIX dbpedia: <http://dbpedia.org/resource/>
+`;
