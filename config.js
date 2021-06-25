@@ -28,6 +28,7 @@ export const DELTA_FILE_FOLDER = process.env.DELTA_FILE_FOLDER || '/tmp/';
 export const KEEP_DELTA_FILES = process.env.KEEP_DELTA_FILES == 'true';
 export const DISABLE_DELTA_INGEST = process.env.DISABLE_DELTA_INGEST == 'true' ? true : false;
 export const DISABLE_INITIAL_SYNC = process.env.DISABLE_INITIAL_SYNC == 'true' ? true : false;
+export const WAIT_FOR_INITIAL_SYNC = process.en.WAIT_FOR_INITIAL_SYNC == 'false'? false: true;
 export const DUMPFILE_FOLDER = process.env.DUMPFILE_FOLDER || 'consumer/deltas';
 export const MU_CALL_SCOPE_ID_INITIAL_SYNC = process.env.MU_CALL_SCOPE_ID_INITIAL_SYNC || 'http://redpencil.data.gift/id/concept/muScope/deltas/consumer/initialSync';
 export const CRON_PATTERN_DELTA_SYNC = process.env.CRON_PATTERN_DELTA_SYNC || '0 * * * * *'; // every minute
