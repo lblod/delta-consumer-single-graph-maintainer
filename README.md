@@ -64,6 +64,7 @@ The following environment variables are optional:
 - `INGEST_GRAPH (default: http://mu.semte.ch/graphs/public)`: graph in which all insert changesets are ingested
 - `DISABLE_INITIAL_SYNC (default: false)`: flag to disable initial sync
 - `DISABLE_DELTA_INGEST (default: false)`: flag to disable data ingestion, for example while initializing the sync
+- `WAIT_FOR_INITIAL_SYNC (default: false)`: flag to not wait for initial ingestion (meant for debugging)
 
 ### Model
 
