@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/lblod/delta-consumer-single-graph-maintainer.git"
   },
-  "author": "dries.hugaerts@qmino.com",
+  "author": "info@redpencil.io",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lblod/delta-consumer-single-graph-maintainer/issues"
