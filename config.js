@@ -39,11 +39,9 @@ export const DIRECT_DATABASE_ENDPOINT = process.env.DIRECT_DATABASE_ENDPOINT || 
 
 export const PUBLIC_GRAPH = process.env.PUBLIC_GRAPH || 'http://mu.semte.ch/graphs/public';
 export const INGEST_GRAPH = process.env.INGEST_GRAPH || `http://mu.semte.ch/graphs/public`;
-export const MU_APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH || 'http://mu.semte.ch/application';
+export const JOBS_GRAPH = process.env.JOBS_GRAPH || 'http://mu.semte.ch/graphs/system/jobs';
 
 // JOBS & TASKS
-
-export const JOBS_GRAPH = process.env.JOBS_GRAPH || 'http://mu.semte.ch/graphs/system/jobs';
 export const JOB_URI_PREFIX = 'http://redpencil.data.gift/id/job/';
 export const JOB_TYPE = 'http://vocab.deri.ie/cogs#Job';
 export const TASK_URI_PREFIX = 'http://redpencil.data.gift/id/task/';
