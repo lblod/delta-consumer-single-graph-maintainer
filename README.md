@@ -65,6 +65,8 @@ The following environment variables are optional:
 - `DISABLE_INITIAL_SYNC (default: false)`: flag to disable initial sync
 - `DISABLE_DELTA_INGEST (default: false)`: flag to disable data ingestion, for example while initializing the sync
 - `WAIT_FOR_INITIAL_SYNC (default: false)`: flag to not wait for initial ingestion (meant for debugging)
+- `BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES (default: false)`: (see code where it is called) This has repercusions you should know of!
+- `DIRECT_DATABASE_ENDPOINT (default: http://virtuoso:8890/sparql)`: only used when BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES is set to true
 
 ### Model
 
