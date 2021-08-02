@@ -1,41 +1,48 @@
----
 kind: pipeline
 type: docker
-name: push-latest-build
+name: push-latest
 steps:
-- name: push-latest-build
+- name: build-and-push
   image: plugins/docker
   settings:
-    repo: lblod/delta-consumer-single-graph-maintainer
+    repo: ${DRONE_REPO}
     username:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    purge: true
 trigger:
   branch:
-    - master
+  - master
+  event:
+    exclude:
+    - pull_request
 ---
 kind: pipeline
 type: docker
-name: release
+name: push-release
 steps:
-- name: build-dry-run
+- name: build-and-push-tag
   image: plugins/docker
   settings:
-    repo: lblod/delta-consumer-single-graph-maintainer
-    dry_run: true
-    purge: true
-- name: push-tagged-build
-  image: plugins/docker
-  settings:
-    repo: lblod/delta-consumer-single-graph-maintainer
-    tags: ${DRONE_TAG##v}
+    repo: ${DRONE_REPO}
+    tags: ${DRONE_TAG##v} # strips v from the tag
     username:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    purge: true
 trigger:
   event:
-    - tag
+  - tag
+---
+kind: pipeline
+type: docker
+name: dry-run
+steps:
+- name: dry-run
+  image: plugins/docker
+  settings:
+    repo: ${DRONE_REPO}
+    dry_run: true
+trigger:
+  event:
+  - pull_request
