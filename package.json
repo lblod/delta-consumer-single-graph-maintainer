@@ -1,6 +1,6 @@
 {
   "name": "delta-consumer-single-graph-maintainer",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Consumer service to synchronise data from a producer stack",
   "main": "app.js",
   "scripts": {
