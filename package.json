@@ -20,6 +20,7 @@
     "@lblod/mu-auth-sudo": "git://github.com:lblod/mu-auth-sudo.git#bdbd063dc8e4d3a891c713a0077a54bc8a010ca1",
     "cron": "^1.8.2",
     "fs-extra": "^9.0.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "n3": "^1.11.1"
   }
 }
