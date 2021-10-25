@@ -37,9 +37,10 @@ app.delete('/initial-sync-jobs', async function( _, res ){
   res.send({ msg: 'Initial sync jobs cleaned' });
 });
 
-app.post('/delta-sync-jobs', async function( _, res ){
+app.get('/delta-sync-jobs', async function( _, res ){
   startDeltaSync();
   res.send({ msg: 'Started delta sync job' });
 });
 
 app.use(errorHandler);
+
