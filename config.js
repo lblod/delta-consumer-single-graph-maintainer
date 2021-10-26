@@ -38,8 +38,10 @@ export const MAX_DB_RETRY_ATTEMPTS = parseInt(process.env.MAX_DB_RETRY_ATTEMPTS 
 export const SLEEP_TIME_AFTER_FAILED_DB_OPERATION = parseInt(process.env.SLEEP_TIME_AFTER_FAILED_DB_OPERATION || 60000);
 
 // GRAPHS
-export const INGEST_GRAPH = process.env.INGEST_GRAPH || `http://mu.semte.ch/graphs/public`;
-export const JOBS_GRAPH = process.env.JOBS_GRAPH || 'http://mu.semte.ch/graphs/system/jobs';
+export const INGEST_GRAPH         = process.env.INGEST_GRAPH         || "http://mu.semte.ch/graphs/public";
+export const JOBS_GRAPH           = process.env.JOBS_GRAPH           || "http://mu.semte.ch/graphs/system/jobs";
+export const UPLOADED_FILES_GRAPH = process.env.UPLOADED_FILES_GRAPH || "http://mu.semte.ch/graphs/uploaded-files";      //On producer side
+export const TEMP_FILE_GRAPH      = process.env.TEMP_FILE_GRAPH      || "http://mu.semte.ch/graphs/temp-uploaded-files";
 
 // JOBS & TASKS
 export const JOB_URI_PREFIX = 'http://redpencil.data.gift/id/job/';
