@@ -25,13 +25,16 @@ export const SYNC_DATASET_PATH = process.env.SYNC_DATASET_PATH || '/datasets';
 export const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 100;
 export const START_FROM_DELTA_TIMESTAMP = process.env.START_FROM_DELTA_TIMESTAMP;
 export const DELTA_FILE_FOLDER = process.env.DELTA_FILE_FOLDER || '/tmp/';
+export const FILE_FOLDER = process.env.FIlE_FOLDER || '/share/';
 export const KEEP_DELTA_FILES = process.env.KEEP_DELTA_FILES == 'true';
 export const DISABLE_DELTA_INGEST = process.env.DISABLE_DELTA_INGEST == 'true' ? true : false;
+export const DISABLE_FILE_INGEST  = process.env.DISABLE_FILE_INGEST  == 'true' ? true : false;
 export const DISABLE_INITIAL_SYNC = process.env.DISABLE_INITIAL_SYNC == 'true' ? true : false;
 export const WAIT_FOR_INITIAL_SYNC = process.env.WAIT_FOR_INITIAL_SYNC == 'false'? false: true;
 export const DUMPFILE_FOLDER = process.env.DUMPFILE_FOLDER || 'consumer/deltas';
 export const MU_CALL_SCOPE_ID_INITIAL_SYNC = process.env.MU_CALL_SCOPE_ID_INITIAL_SYNC || 'http://redpencil.data.gift/id/concept/muScope/deltas/consumer/initialSync';
 export const CRON_PATTERN_DELTA_SYNC = process.env.CRON_PATTERN_DELTA_SYNC || '0 * * * * *'; // every minute
+export const CRON_PATTERN_FILE_SYNC  = process.env.CRON_PATTERN_FILE_SYNC  || '0 * * * * *'; // every minute
 export const BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES = process.env.BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES == 'true' ? true : false;
 export const DIRECT_DATABASE_ENDPOINT = process.env.DIRECT_DATABASE_ENDPOINT || 'http://virtuoso:8890/sparql';
 export const MAX_DB_RETRY_ATTEMPTS = parseInt(process.env.MAX_DB_RETRY_ATTEMPTS || 5);
@@ -87,5 +90,5 @@ export const PREFIXES = `
   PREFIX cogs: <http://vocab.deri.ie/cogs#>
   PREFIX adms: <http://www.w3.org/ns/adms#>
   PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
-  PREFIX dbpedia: <http://dbpedia.org/resource/>
+  PREFIX dbpedia: <http://dbpedia.org/ontology/>
 `;

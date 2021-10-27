@@ -24,10 +24,10 @@
 
 - Intercept file triples
     > Find a good place for a filtering hook, store them, and process them at the right time.
-    * [ ] Find filtering hook place
-    * [ ] Store to separate graph
-    * [ ] Find mechanism for periodic scan of file metadata
-    * [ ] Define minimum requierement to download file
+    * [x] Find filtering hook place
+    * [x] Store to separate graph
+    * [x] Find mechanism for periodic scan of file metadata
+    * [ ] Define minimum requirement to download file
     * [ ] Download and store file (see other task)
     * [ ] Only when all metadata arrived -> store metadata triples in main graph (not to flip out indexers in the stack)
 
