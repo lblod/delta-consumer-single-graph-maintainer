@@ -7,6 +7,7 @@
     > Some things to fix or make
     * [x] Make sure to test if a file exists explicitely to stop the downloading. Now, it trusts the failure of creating the write stream. Or try to create write stream before sending the request.
     * [ ] Use tasks for the sync of files
+    * [x] Write JSDoc
 
 ## Done
 
