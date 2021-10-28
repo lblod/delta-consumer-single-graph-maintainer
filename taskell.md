@@ -1,20 +1,11 @@
 ## To Do
 
-- Triple flow
-    > Listing the flow of triples.
-    * [x] Data stored in different graphs in producer side
-    * [x] Delta notifier sends all information to producer
-    * [x] Producer stores triples in files, subfolder "deltas/physical-files"
-    * [x] Producer file metadata in "json-diff-files" (see mu-authorization)
-    * [x] Consumer downloads files from file service
-    * [x] Consumer stores files in subfolder "consumer-files", no metadata
-    * [x] Consumer imports data in single graph: "synced-files"
 
 ## Doing
 
 - Extra features
     > Some things to fix or make
-    * [ ] Make sure to test if a file exists explicitely to stop the downloading. Now, it trusts the failure of creating the write stream. Or try to create write stream before sending the request.
+    * [x] Make sure to test if a file exists explicitely to stop the downloading. Now, it trusts the failure of creating the write stream. Or try to create write stream before sending the request.
     * [ ] Use tasks for the sync of files
 
 ## Done
@@ -50,3 +41,12 @@
     * [x] CHECK  graph information with delta files sent to consumer
     * [x] In consumer, filter file metadata based on graph
     * [x] Graph URI in config
+- Triple flow
+    > Listing the basic flow of triples.
+    * [x] Data stored in different graphs in producer side
+    * [x] Delta notifier sends all information to producer
+    * [x] Producer stores triples in files, subfolder "deltas/physical-files"
+    * [x] Producer file metadata in "json-diff-files" (see mu-authorization)
+    * [x] Consumer downloads files from file service
+    * [x] Consumer stores files in subfolder "consumer-files", no metadata
+    * [x] Consumer imports data in single graph: "synced-files"
