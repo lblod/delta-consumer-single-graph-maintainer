@@ -4,6 +4,14 @@
     > Some things to fix or make
     * [x] Make sure to test if a file exists explicitely to stop the downloading. Now, it trusts the failure of creating the write stream. Or try to create write stream before sending the request.
     * [x] Write JSDoc
+- Needed improvements
+    > These need to be done!
+    * [ ] Sync-file ln73-ln79 needs to be a single query/transaction
+- File remapping
+    > Problem 2. Files can be put in different folders by different services. How to remap them to new folders?
+    * [ ] Make test where a service puts a file in a subfolder
+    * [ ] Make sure folder structure is remade like on the producer, look at the URI to recreate folders on the fly.
+    * [ ] Filter on the folder structure, and be able to replace structure.
 
 ## Doing
 
@@ -12,18 +20,11 @@
     * [x] Use uuid to download file
     * [x] Save file with same name/uuid in same place
     * [ ] Allow for multiple attempts: add a triple with attempt number?
-    * [ ] When max attempts exceede: do what exactly?
-- Removal of files
-    > Files also need to be removed when metadata is removed.
-    * [x] Find location when metadata is removed
-    * [x] Write metadata to temp removal graph
-    * [x] When minimum data received, remove physical file
-    * [x] Store deletes to ingest graph
-    * [x] Remove from temp removal graph
-    * [ ] Remove triples before files?
+    * [ ] When max attempts exceeded: do what exactly?
 - Tasks
     > Tasks to coördinate synchronisation of files
     * [ ] How do tasks work for the regulare file synchronisation?
+    * [ ] How about initial sync?
 
 ## Done
 
@@ -60,3 +61,11 @@
     > Add error handling code during file synchronisation.
     * [x] Error messages per subtask
     * [x] Extend the previous error
+- Removal of files
+    > Files also need to be removed when metadata is removed.
+    * [x] Find location when metadata is removed
+    * [x] Write metadata to temp removal graph
+    * [x] When minimum data received, remove physical file
+    * [x] Store deletes to ingest graph
+    * [x] Remove from temp removal graph
+    * [x] Remove triples before files
