@@ -19,8 +19,9 @@
     > The process of downloading a file and putting it in the correct place.
     * [x] Use uuid to download file
     * [x] Save file with same name/uuid in same place
-    * [ ] Allow for multiple attempts: add a triple with attempt number?
-    * [ ] When max attempts exceeded: do what exactly?
+    * [x] Allow for multiple attempts: add a triple with attempt number?
+    * [x] When max attempts exceeded: do what exactly?
+    * [ ] Revise the runFileSync function to be more concise, better at error handling and continuing execution on error. Make sure the process is divided in steps that always leave the database in a consistent state, and the application can crash between these steps.
 - Tasks
     > Tasks to coördinate synchronisation of files
     * [ ] How do tasks work for the regulare file synchronisation?
