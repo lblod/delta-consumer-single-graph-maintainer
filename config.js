@@ -47,6 +47,10 @@ export const UPLOADED_FILES_GRAPH    = process.env.UPLOADED_FILES_GRAPH    || "h
 export const TEMP_FILE_GRAPH         = process.env.TEMP_FILE_GRAPH         || "http://mu.semte.ch/graphs/temp-uploaded-files";
 export const TEMP_FILE_REMOVAL_GRAPH = process.env.TEMP_FILE_REMOVAL_GRAPH || "http://mu.semte.ch/graphs/temp-removal-files";
 
+// REMAPPING
+export const REMAPPING = process.env.REMAPPING || { "/": "/testShare/" };
+//export const REMAPPING = process.env.REMAPPING || {};
+
 // JOBS & TASKS
 export const JOB_URI_PREFIX = 'http://redpencil.data.gift/id/job/';
 export const JOB_TYPE = 'http://vocab.deri.ie/cogs#Job';
