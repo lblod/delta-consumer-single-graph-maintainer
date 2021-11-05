@@ -21,15 +21,15 @@ waitForDatabase(startInitialSync);
 new CronJob(CRON_PATTERN_DELTA_SYNC, async function() {
   const now = new Date().toISOString();
   console.info(`Delta sync triggered by cron job at ${now}`);
-  console.log("Delta sync not executed, uncomment the code for that in the CronJob");
-  //await startDeltaSync();
+  //console.log("Delta sync not executed, uncomment the code for that in the CronJob");
+  await startDeltaSync();
 }, null, true);
 
 new CronJob(CRON_PATTERN_FILE_SYNC, async function() {
   const now = new Date().toISOString();
   console.info(`File sync triggered by cron job at ${now}`);
-  console.log("File sync not executed, uncomment the code for that in the CronJob");
-  //await startFileSync();
+  //console.log("File sync not executed, uncomment the code for that in the CronJob");
+  await startFileSync();
 }, null, true);
 
 /*
