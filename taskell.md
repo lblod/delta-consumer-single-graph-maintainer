@@ -22,7 +22,7 @@
     * [ ] Make test where a service puts a file in a subfolder
     * [ ] Make sure folder structure is remade like on the producer, look at the URI to recreate folders on the fly.
     * [ ] Filter on the folder structure, and be able to replace structure.
-    * [ ] File name is not full path! Whenever you query for filenames, consider using the URI instead to also get the full path.
+    * [x] File name is not full path! Whenever you query for filenames, consider using the URI instead to also get the full path.
 
 ## Done
 
