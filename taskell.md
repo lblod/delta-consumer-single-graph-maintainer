@@ -22,13 +22,15 @@
     * [ ] Make sure folder structure is remade like on the producer, look at the URI to recreate folders on the fly.
     * [x] Filter on the folder structure, and be able to replace structure.
     * [x] File name is not full path! Whenever you query for filenames, consider using the URI instead to also get the full path.
+    * [ ] Remapping failed metadata to failure graph?
 - Updates to metadata
     > There can be updates to metadata, think about the "modified" property, or the "filename". These are singular triples(?).
-    * [ ] Create new stage where these updates are done
-    * [ ] Filter triples about URI that already exists in ingest graph, or on replacement triple
-    * [ ] Move to ingest graph, removing old data
+    * [x] Create new stage where these updates are done
+    * [x] Filter triples about URI that already exists in ingest graph, or on replacement triple
+    * [x] Move to ingest graph, removing old data
     * [ ] On filename, also change physical filename?
     * [ ] Also need for remapping?
+    * [ ] Failing metadata updates to failure graph?
 
 ## Done
 
