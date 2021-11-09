@@ -13,7 +13,7 @@ import { startDeltaSync } from './lib/delta-sync/delta-sync';
 import { startFileSync }  from './lib/delta-sync/file-sync';
 
 app.get('/', function(req, res) {
-  res.status(200).json({ result: `Hello, you have reached ${SERVICE_NAME}! I'm doing just fine :)` });
+  res.send(`Hello, you have reached ${SERVICE_NAME}! I'm doing just fine :)`);
 });
 
 waitForDatabase(startInitialSync);
@@ -36,7 +36,7 @@ new CronJob(CRON_PATTERN_FILE_SYNC, async function() {
  * ENDPOINTS CURRENTLY MEANT FOR DEBUGGING
  */
 
-app.get('/initial-sync-jobs', async function( _, res ){
+app.post('/initial-sync-jobs', async function( _, res ){
   startInitialSync();
   res.send({ msg: 'Started initial sync job' });
 });
@@ -47,12 +47,12 @@ app.delete('/initial-sync-jobs', async function( _, res ){
   res.send({ msg: 'Initial sync jobs cleaned' });
 });
 
-app.get('/delta-sync-jobs', async function( req, res ){
+app.post('/delta-sync-jobs', async function( _, res ){
   startDeltaSync();
   res.send({ msg: 'Started delta sync job' });
 });
 
-app.get("/file-sync", async function (req, res) {
+app.post("/file-sync", async function (req, res) {
   startFileSync();
   res.json({ msg: "Started file sync" });
 });
