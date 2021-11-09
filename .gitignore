@@ -5,4 +5,5 @@ package-lock.json
 .vimrc
 FrequentSPARQLqueries.sparql
 taskell.md
+build.sh
 
