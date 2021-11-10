@@ -2,3 +2,8 @@
 node_modules/
 package-lock.json
 .log/
+.vimrc
+FrequentSPARQLqueries.sparql
+taskell.md
+build.sh
+
