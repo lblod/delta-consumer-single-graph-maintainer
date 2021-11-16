@@ -25,21 +25,39 @@ export const SYNC_DATASET_PATH = process.env.SYNC_DATASET_PATH || '/datasets';
 export const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 100;
 export const START_FROM_DELTA_TIMESTAMP = process.env.START_FROM_DELTA_TIMESTAMP;
 export const DELTA_FILE_FOLDER = process.env.DELTA_FILE_FOLDER || '/tmp/';
+export const FILE_FOLDER = process.env.FIlE_FOLDER || '/share/';
 export const KEEP_DELTA_FILES = process.env.KEEP_DELTA_FILES == 'true';
 export const DISABLE_DELTA_INGEST = process.env.DISABLE_DELTA_INGEST == 'true' ? true : false;
+export const DISABLE_FILE_INGEST = process.env.DISABLE_FILE_INGEST == 'true' ? true : false;
 export const DISABLE_INITIAL_SYNC = process.env.DISABLE_INITIAL_SYNC == 'true' ? true : false;
 export const WAIT_FOR_INITIAL_SYNC = process.env.WAIT_FOR_INITIAL_SYNC == 'false'? false: true;
 export const DUMPFILE_FOLDER = process.env.DUMPFILE_FOLDER || 'consumer/deltas';
 export const MU_CALL_SCOPE_ID_INITIAL_SYNC = process.env.MU_CALL_SCOPE_ID_INITIAL_SYNC || 'http://redpencil.data.gift/id/concept/muScope/deltas/consumer/initialSync';
+export const MU_CALL_SCOPE_ID_FILE_SYNC = process.env.MU_CALL_SCOPE_ID_FILE_SYNC || 'http://redpencil.data.gift/id/concept/muScope/deltas/consumer/fileSync';
 export const CRON_PATTERN_DELTA_SYNC = process.env.CRON_PATTERN_DELTA_SYNC || '0 * * * * *'; // every minute
+export const CRON_PATTERN_FILE_SYNC = process.env.CRON_PATTERN_FILE_SYNC || '0 * * * * *'; // every minute
 export const BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES = process.env.BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES == 'true' ? true : false;
 export const DIRECT_DATABASE_ENDPOINT = process.env.DIRECT_DATABASE_ENDPOINT || 'http://virtuoso:8890/sparql';
 export const MAX_DB_RETRY_ATTEMPTS = parseInt(process.env.MAX_DB_RETRY_ATTEMPTS || 5);
 export const SLEEP_TIME_AFTER_FAILED_DB_OPERATION = parseInt(process.env.SLEEP_TIME_AFTER_FAILED_DB_OPERATION || 60000);
+export const PERFORM_SEPERATE_FILE_SYNC = process.env.PERFORM_SEPERATE_FILE_SYNC || true;
+export const MAX_DOWNLOAD_ATTEMPTS = 5;
 
 // GRAPHS
-export const INGEST_GRAPH = process.env.INGEST_GRAPH || `http://mu.semte.ch/graphs/public`;
-export const JOBS_GRAPH = process.env.JOBS_GRAPH || 'http://mu.semte.ch/graphs/system/jobs';
+export const INGEST_GRAPH = process.env.INGEST_GRAPH || "http://mu.semte.ch/graphs/public";
+export const JOBS_GRAPH = process.env.JOBS_GRAPH || "http://mu.semte.ch/graphs/system/jobs";
+export const TEMP_FILE_GRAPH = process.env.TEMP_FILE_GRAPH || "http://mu.semte.ch/graphs/temp-uploaded-files";
+export const TEMP_FILE_REMOVAL_GRAPH = process.env.TEMP_FILE_REMOVAL_GRAPH || "http://mu.semte.ch/graphs/temp-removal-files";
+
+// URI PREFIXES FOR FILTERING ON FILES
+export const FILE_PREFIXES = [
+  "share://",
+  "http://mu.semte.ch/services/file-service/files/"
+];
+
+// REMAPPING
+export const REMAPPING = process.env.REMAPPING || { "/": "/testShare/" };
+//export const REMAPPING = process.env.REMAPPING || {};
 
 // JOBS & TASKS
 export const JOB_URI_PREFIX = 'http://redpencil.data.gift/id/job/';
@@ -54,6 +72,27 @@ export const TASK_NOT_STARTED_STATUS = `http://lblod.data.gift/sync-task-statuse
 export const TASK_ONGOING_STATUS = `http://lblod.data.gift/sync-task-statuses/ongoing`;
 export const TASK_SUCCESS_STATUS = `http://lblod.data.gift/sync-task-statuses/success`;
 export const TASK_FAILED_STATUS = `http://lblod.data.gift/sync-task-statuses/failure`;
+
+export const DOWNLOAD_NOT_STARTED_STATUS = "http://lblod.data.gift/download-task-statuses/not-started";
+export const DOWNLOAD_ONGOING_STATUS = "http://lblod.data.gift/download-task-statuses/ongoing";
+export const DOWNLOAD_FAILURE_STATUS = "http://lblod.data.gift/download-task-statuses/failure";
+export const DOWNLOAD_SUCCESS_STATUS = "http://lblod.data.gift/download-task-statuses/success";
+export const REMAPPING_NOT_STARTED_STATUS = "http://lblod.data.gift/remapping-task-statuses/not-started";
+export const REMAPPING_ONGOING_STATUS = "http://lblod.data.gift/remapping-task-statuses/ongoing";
+export const REMAPPING_FAILURE_STATUS = "http://lblod.data.gift/remapping-task-statuses/failure";
+export const REMAPPING_SUCCESS_STATUS = "http://lblod.data.gift/remapping-task-statuses/success";
+export const MOVING_NOT_STARTED_STATUS = "http://lblod.data.gift/moving-task-statuses/not-started";
+export const MOVING_ONGOING_STATUS = "http://lblod.data.gift/moving-task-statuses/ongoing";
+export const MOVING_FAILURE_STATUS = "http://lblod.data.gift/moving-task-statuses/failure";
+export const MOVING_SUCCESS_STATUS = "http://lblod.data.gift/moving-task-statuses/success";
+export const REMOVE_NOT_STARTED_STATUS = "http://lblod.data.gift/remove-task-statuses/not-started";
+export const REMOVE_ONGOING_STATUS = "http://lblod.data.gift/remove-task-statuses/ongoing";
+export const REMOVE_FAILURE_STATUS = "http://lblod.data.gift/remove-task-statuses/failure";
+export const REMOVE_SUCCESS_STATUS = "http://lblod.data.gift/remove-task-statuses/success";
+export const UPDATE_NOT_STARTED_STATUS = "http://lblod.data.gift/update-task-statuses/not-started";
+export const UPDATE_ONGOING_STATUS = "http://lblod.data.gift/update-task-statuses/ongoing";
+export const UPDATE_FAILURE_STATUS = "http://lblod.data.gift/update-task-statuses/failure";
+export const UPDATE_SUCCESS_STATUS = "http://lblod.data.gift/update-task-statuses/success";
 
 // STATUS
 
@@ -85,5 +124,5 @@ export const PREFIXES = `
   PREFIX cogs: <http://vocab.deri.ie/cogs#>
   PREFIX adms: <http://www.w3.org/ns/adms#>
   PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
-  PREFIX dbpedia: <http://dbpedia.org/resource/>
+  PREFIX dbpedia: <http://dbpedia.org/ontology/>
 `;
