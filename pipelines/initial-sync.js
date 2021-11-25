@@ -5,15 +5,14 @@ import {
     SLEEP_TIME_AFTER_FAILED_DB_OPERATION, STATUS_FAILED,
     STATUS_SUCCESS,
     TASK_SUCCESS_STATUS
-} from '../../config';
-import { INITIAL_SYNC_TASK_OPERATION, STATUS_BUSY, STATUS_SCHEDULED } from '../../lib/constants';
-import { getLatestDumpFile } from '../../lib/dump-file';
-import { createError, createJobError } from '../../lib/error';
-import { createJob, getLatestJobForOperation } from '../../lib/job';
-import { createTask } from '../../lib/task';
-import { insertTriples, updateStatus } from '../../lib/utils';
-import { createSyncTask } from '../delta-sync/sync-task';
-import { storeError } from '../utils';
+} from '../config';
+import { INITIAL_SYNC_TASK_OPERATION, STATUS_BUSY, STATUS_SCHEDULED } from '../lib/constants';
+import { getLatestDumpFile } from '../lib/dump-file';
+import { createError, createJobError } from '../lib/error';
+import { createJob, getLatestJobForOperation } from '../lib/job';
+import { createTask } from '../lib/task';
+import { insertTriples, updateStatus } from '../lib/utils';
+import { createSyncTask } from './delta-sync/sync-task';
 
 export async function startInitialSync() {
   try {

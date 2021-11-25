@@ -1,7 +1,9 @@
 import {
   DISABLE_DELTA_INGEST,
   STATUS_SUCCESS,
-  WAIT_FOR_INITIAL_SYNC
+  WAIT_FOR_INITIAL_SYNC,
+  INITIAL_SYNC_JOB_OPERATION,
+  JOBS_GRAPH, SERVICE_NAME
 } from '../../config';
 import {
   getNextSyncTask,
@@ -9,14 +11,13 @@ import {
   scheduleSyncTask,
   setTaskFailedStatus
 } from './sync-task';
-import { getLatestInitialSyncJob } from '../initial-sync/initial-sync-job';
-import { storeError } from '../utils';
-
+import { getLatestJobForOperation } from '../../lib/job';
+import { createError } from '../../lib/error';
 export async function startDeltaSync() {
   try {
     console.info(`DISABLE_DELTA_INGEST: ${DISABLE_DELTA_INGEST}`);
     if (!DISABLE_DELTA_INGEST) {
-      const previousInitialSyncJob = await getLatestInitialSyncJob();
+      const previousInitialSyncJob = await getLatestJobForOperation(INITIAL_SYNC_JOB_OPERATION);
       if (WAIT_FOR_INITIAL_SYNC && !(previousInitialSyncJob && previousInitialSyncJob.status == STATUS_SUCCESS)) {
         console.log('No successful initial sync job found. Not scheduling delta ingestion.');
       } else {
@@ -35,7 +36,7 @@ export async function startDeltaSync() {
   }
   catch(e) {
     console.log(e);
-    await storeError(`Unexpected error while running normal sync task: ${e}`);
+    await createError(JOBS_GRAPH, SERVICE_NAME, `Unexpected error while running normal sync task: ${e}`);
   }
 }
 
@@ -62,6 +63,6 @@ async function runDeltaSync() {
       console.log('A sync task is already running. A new task is scheduled and will start when the previous task finishes.');
     }
   } catch (error) {
-    await storeError(`Unexpected error while ingesting: ${error}`);
+    await createError(JOBS_GRAPH, SERVICE_NAME, `Unexpected error while ingesting: ${error}`);
   }
 }
