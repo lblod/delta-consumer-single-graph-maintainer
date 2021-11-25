@@ -5,10 +5,10 @@ import {
   INITIAL_SYNC_JOB_OPERATION,
   CRON_PATTERN_DELTA_SYNC
 } from './config';
-import { waitForDatabase } from './lib/database';
-import { cleanupJobs, getJobs } from './lib/utils';
-import { startInitialSync } from './lib/initial-sync/initial-sync';
-import { startDeltaSync } from './lib/delta-sync/delta-sync';
+import { waitForDatabase } from './pipelines/database';
+import { cleanupJobs, getJobs } from './pipelines/utils';
+import { startInitialSync } from './pipelines/initial-sync/initial-sync';
+import { startDeltaSync } from './pipelines/delta-sync/delta-sync';
 
 app.get('/', function(req, res) {
   res.send(`Hello, you have reached ${SERVICE_NAME}! I'm doing just fine :)`);
