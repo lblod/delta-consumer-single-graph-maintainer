@@ -1,14 +1,12 @@
-import { app, errorHandler } from 'mu';
 import { CronJob } from 'cron';
+import { app, errorHandler } from 'mu';
 import {
-  SERVICE_NAME,
-  INITIAL_SYNC_JOB_OPERATION,
-  CRON_PATTERN_DELTA_SYNC
+    CRON_PATTERN_DELTA_SYNC, INITIAL_SYNC_JOB_OPERATION, SERVICE_NAME
 } from './config';
-import { waitForDatabase } from './pipelines/database';
-import { cleanupJobs, getJobs } from './pipelines/utils';
-import { startInitialSync } from './pipelines/initial-sync/initial-sync';
+import { waitForDatabase } from './lib/database';
+import { cleanupJob, getJobs } from './lib/job';
 import { startDeltaSync } from './pipelines/delta-sync/delta-sync';
+import { startInitialSync } from './pipelines/initial-sync';
 
 app.get('/', function(req, res) {
   res.send(`Hello, you have reached ${SERVICE_NAME}! I'm doing just fine :)`);
@@ -33,7 +31,9 @@ app.post('/initial-sync-jobs', async function( _, res ){
 
 app.delete('/initial-sync-jobs', async function( _, res ){
   const jobs = await getJobs(INITIAL_SYNC_JOB_OPERATION);
-  await cleanupJobs(jobs);
+  for(const { job } of jobs){
+    await cleanupJob(job);
+  }
   res.send({ msg: 'Initial sync jobs cleaned' });
 });
 
