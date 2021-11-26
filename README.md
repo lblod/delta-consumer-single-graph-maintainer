@@ -47,13 +47,14 @@ To achieve this we can simple add a `CRON_PATTERN_DELTA_SYNC` env. variable
 The following environment variables are required:
 
 - `SERVICE_NAME`: consumer identifier. important as it is used to ensure persistence. The identifier should be unique within the project. [REQUIRED]
-- `SYNC_DATASET_SUBJECT`: subject used when fetching the dataset [REQUIRED]
 - `JOB_CREATOR_URI`: URL of the creator of the sync jobs [REQUIRED]
-- `INITIAL_SYNC_JOB_OPERATION`: Job operation of the initial sync job, used to describe the created jobs [REQUIRED]
 - `DELTA_SYNC_JOB_OPERATION`: Job operation of the delta sync job, used to describe the created jobs [REQUIRED]
+- `SYNC_DATASET_SUBJECT`: subject used when fetching the dataset [REQUIRED BY DEFAULT]
+- `INITIAL_SYNC_JOB_OPERATION`: Job operation of the initial sync job, used to describe the created jobs [REQUIRED BY DEFAULT]
+
+To overrule the last two default required settings, and thus just ingesting deltafiles, set `WAIT_FOR_INITIAL_SYNC: false` and `DISABLE_INITIAL_SYNC: true`.
 
 The following environment variables are optional:
-
 - `SYNC_BASE_URL`: base URL of the stack hosting the producer API
 - `SYNC_FILES_PATH (default: /sync/files)`: relative path to the endpoint to retrieve names of the diff files from
 - `DOWNLOAD_FILES_PATH (default: /files/:id/download)`: relative path to the endpoint to download a diff file
@@ -69,6 +70,7 @@ The following environment variables are optional:
 - `DIRECT_DATABASE_ENDPOINT (default: http://virtuoso:8890/sparql)`: only used when BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES is set to true
 - `KEEP_DELTA_FILES (default: false)`: if you want to keep the downloaded delta-files (ease of troubleshooting)
 - `BATCH_SIZE (default: 100)`: Size of the batches to ingest in DB
+
 ### Model
 
 
