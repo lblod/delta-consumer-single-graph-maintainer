@@ -19,15 +19,18 @@ export async function startDeltaSync() {
       console.warn('Automated delta ingest disabled');
     }
     else {
-      const previousInitialSyncJob = await getLatestJobForOperation(INITIAL_SYNC_JOB_OPERATION, JOB_CREATOR_URI);
+      console.log(`Status of WAIT_FOR_INITIAL_SYNC is: ${WAIT_FOR_INITIAL_SYNC}`);
+      let previousInitialSyncJob;
+
+      if (WAIT_FOR_INITIAL_SYNC){
+        previousInitialSyncJob = await getLatestJobForOperation(INITIAL_SYNC_JOB_OPERATION, JOB_CREATOR_URI);
+      }
 
       if (WAIT_FOR_INITIAL_SYNC && !(previousInitialSyncJob && previousInitialSyncJob.status == STATUS_SUCCESS)) {
         console.log('No successful initial sync job found. Not scheduling delta ingestion.');
       }
       else {
-
-        console.log('Initial sync was success, proceeding in Normal operation mode: ingest deltas');
-
+        console.log('Proceeding in Normal operation mode: ingest deltas');
         //Note: it is ok to fail these, because we assume it is running in a queue. So there is no way
         // a job in status busy was effectively doing something
         console.log(`Verify whether there are hanging jobs`);
