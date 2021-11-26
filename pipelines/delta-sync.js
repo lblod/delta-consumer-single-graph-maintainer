@@ -85,7 +85,7 @@ async function runDeltaSync() {
   catch (error) {
     if(job){
       await createJobError(JOBS_GRAPH, job, error);
-      await updateStatus(job, STATUS_FAILED);
+      await failJob(job);
     }
     else {
       await createError(JOBS_GRAPH, SERVICE_NAME, `Unexpected error while ingesting: ${error}`);
