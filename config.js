@@ -16,6 +16,10 @@ if(!process.env.INITIAL_SYNC_JOB_OPERATION)
   throw `Expected 'INITIAL_SYNC_JOB_OPERATION' to be provided.`;
 export const INITIAL_SYNC_JOB_OPERATION = process.env.INITIAL_SYNC_JOB_OPERATION;
 
+if(!process.env.DELTA_SYNC_JOB_OPERATION)
+  throw `Expected 'DELTA_SYNC_JOB_OPERATION' to be provided.`;
+export const DELTA_SYNC_JOB_OPERATION = process.env.DELTA_SYNC_JOB_OPERATION;
+
 // CONFIGURATION
 
 export const SYNC_BASE_URL = process.env.SYNC_BASE_URL;
@@ -46,9 +50,3 @@ export const JOBS_GRAPH = process.env.JOBS_GRAPH || 'http://mu.semte.ch/graphs/s
 export const SYNC_FILES_ENDPOINT = `${SYNC_BASE_URL}${SYNC_FILES_PATH}`;
 export const DOWNLOAD_FILE_ENDPOINT = `${SYNC_BASE_URL}${DOWNLOAD_FILE_PATH}`;
 export const SYNC_DATASET_ENDPOINT = `${SYNC_BASE_URL}${SYNC_DATASET_PATH}`;
-
-// INTERNAL SYNC TASKS
-export const TASK_NOT_STARTED_STATUS = `http://lblod.data.gift/sync-task-statuses/not-started`;
-export const TASK_ONGOING_STATUS = `http://lblod.data.gift/sync-task-statuses/ongoing`;
-export const TASK_SUCCESS_STATUS = `http://lblod.data.gift/sync-task-statuses/success`;
-export const TASK_FAILED_STATUS = `http://lblod.data.gift/sync-task-statuses/failure`;

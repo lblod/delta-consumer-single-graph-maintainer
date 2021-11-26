@@ -4,9 +4,12 @@ import {
     CRON_PATTERN_DELTA_SYNC, INITIAL_SYNC_JOB_OPERATION, SERVICE_NAME
 } from './config';
 import { waitForDatabase } from './lib/database';
+import { ProcessingQueue } from './lib/processing-queue';
 import { cleanupJob, getJobs } from './lib/job';
-import { startDeltaSync } from './pipelines/delta-sync/delta-sync';
+import { startDeltaSync } from './pipelines/delta-sync';
 import { startInitialSync } from './pipelines/initial-sync';
+
+const deltaSyncQueue = new ProcessingQueue('delta-sync-queue');
 
 app.get('/', function(req, res) {
   res.send(`Hello, you have reached ${SERVICE_NAME}! I'm doing just fine :)`);
@@ -17,7 +20,7 @@ waitForDatabase(startInitialSync);
 new CronJob(CRON_PATTERN_DELTA_SYNC, async function() {
   const now = new Date().toISOString();
   console.info(`Delta sync triggered by cron job at ${now}`);
-  await startDeltaSync();
+  deltaSyncQueue.addJob(startDeltaSync);
 }, null, true);
 
 /*

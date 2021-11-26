@@ -1,23 +1,22 @@
 import {
     BATCH_SIZE, BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES,
     DIRECT_DATABASE_ENDPOINT, DISABLE_INITIAL_SYNC, INGEST_GRAPH, INITIAL_SYNC_JOB_OPERATION,
-    JOBS_GRAPH, MAX_DB_RETRY_ATTEMPTS, MU_CALL_SCOPE_ID_INITIAL_SYNC, SERVICE_NAME, SLEEP_BETWEEN_BATCHES,
-    SLEEP_TIME_AFTER_FAILED_DB_OPERATION,
-    TASK_SUCCESS_STATUS
+    JOBS_GRAPH, JOB_CREATOR_URI, MAX_DB_RETRY_ATTEMPTS, MU_CALL_SCOPE_ID_INITIAL_SYNC, SERVICE_NAME, SLEEP_BETWEEN_BATCHES,
+    SLEEP_TIME_AFTER_FAILED_DB_OPERATION
 } from '../config';
 import { INITIAL_SYNC_TASK_OPERATION, STATUS_BUSY, STATUS_FAILED, STATUS_SCHEDULED, STATUS_SUCCESS } from '../lib/constants';
+import { createDeltaSyncTask } from '../lib/delta-sync-task';
 import { getLatestDumpFile } from '../lib/dump-file';
 import { createError, createJobError } from '../lib/error';
 import { createJob, getLatestJobForOperation } from '../lib/job';
 import { createTask } from '../lib/task';
-import { insertTriples, updateStatus } from '../lib/utils';
-import { createSyncTask } from './delta-sync/sync-task';
+import { batchedDbUpdate, updateStatus } from '../lib/utils';
 
 export async function startInitialSync() {
   try {
     console.info(`DISABLE_INITIAL_SYNC: ${DISABLE_INITIAL_SYNC}`);
     if(!DISABLE_INITIAL_SYNC) {
-      const initialSyncJob = await getLatestJobForOperation(INITIAL_SYNC_JOB_OPERATION);
+      const initialSyncJob = await getLatestJobForOperation(INITIAL_SYNC_JOB_OPERATION, JOB_CREATOR_URI);
       // In following case we can safely (re)schedule an initial sync
       if (!initialSyncJob || initialSyncJob.status == STATUS_FAILED) {
         console.log(`No initial sync has run yet, or previous failed (see: ${initialSyncJob ? initialSyncJob.job : 'N/A'})`);
@@ -48,7 +47,7 @@ async function runInitialSync() {
   try {
 
     // Note: they get status busy
-    job = await createJob(JOBS_GRAPH, INITIAL_SYNC_JOB_OPERATION, STATUS_BUSY);
+    job = await createJob(JOBS_GRAPH, INITIAL_SYNC_JOB_OPERATION, JOB_CREATOR_URI, STATUS_BUSY);
     task = await createTask(JOBS_GRAPH, job,"0", INITIAL_SYNC_TASK_OPERATION, STATUS_SCHEDULED);
 
     const dumpFile = await getLatestDumpFile();
@@ -64,8 +63,8 @@ async function runInitialSync() {
       }
       console.log(`Using ${endpoint} to insert triples`);
 
-      await insertTriples(INGEST_GRAPH,
-                          triples,
+      await batchedDbUpdate(INGEST_GRAPH,
+                            triples,
                           { 'mu-call-scope-id': MU_CALL_SCOPE_ID_INITIAL_SYNC },
                           endpoint,
                           BATCH_SIZE,
@@ -82,8 +81,8 @@ async function runInitialSync() {
     }
 
     //Some glue to coordinate the nex sync-task. It needs to know from where it needs to start syncing
-    //Note: this based on old model.
-    await createSyncTask(dumpFile.issued, TASK_SUCCESS_STATUS);
+    const dummySyncTask = await createDeltaSyncTask(JOBS_GRAPH, job, `1`, STATUS_SCHEDULED, dumpFile);
+    await updateStatus(dummySyncTask, STATUS_SUCCESS); //TODO: remove this '2-phase-commit'.
 
     await updateStatus(job, STATUS_SUCCESS);
 
