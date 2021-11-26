@@ -4,9 +4,9 @@ Configurable consumer to sync data from external sources based on diff files gen
 producer can be found [here](http://github.com/lblod/mandatendatabank-mandatarissen-producer).
 
 It does two things:
-- Initial sync by getting dump files to ingest. Happens on service startup, only once, and is mandatory
+- Initial sync by getting dump files to ingest. Happens on service startup, only once, if enabled.
 - Delta sync at regular intervals where the consumer checks for new diff files and ingests the data
-  found within
+  found within.
 
 ## Tutorials
 
@@ -22,7 +22,8 @@ It does two things:
         SYNC_BASE_URL: 'http://base-sync-url # replace with link the application hosting the producer server
         SYNC_FILES_PATH: '/sync/files'
         SYNC_DATASET_SUBJECT: "http://data.lblod.info/datasets/delta-producer/dumps/CacheGraphDump"
-        INITIAL_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/initialSync"
+        INITIAL_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzInitialSync"
+        DELTA_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzDeltaFileSyncing"
         JOB_CREATOR_URI: "http://data.lblod.info/services/id/consumer"
       volumes:
         - ./config/consumer/:/config/ # replace with path to types configuration
@@ -48,7 +49,8 @@ The following environment variables are required:
 - `SERVICE_NAME`: consumer identifier. important as it is used to ensure persistence. The identifier should be unique within the project. [REQUIRED]
 - `SYNC_DATASET_SUBJECT`: subject used when fetching the dataset [REQUIRED]
 - `JOB_CREATOR_URI`: URL of the creator of the sync jobs [REQUIRED]
-- `INITIAL_SYNC_JOB_OPERATION`: Job operation of the sync job, used to describe the created jobs [REQUIRED]
+- `INITIAL_SYNC_JOB_OPERATION`: Job operation of the initial sync job, used to describe the created jobs [REQUIRED]
+- `DELTA_SYNC_JOB_OPERATION`: Job operation of the delta sync job, used to describe the created jobs [REQUIRED]
 
 The following environment variables are optional:
 
@@ -57,8 +59,8 @@ The following environment variables are optional:
 - `DOWNLOAD_FILES_PATH (default: /files/:id/download)`: relative path to the endpoint to download a diff file
   from. `:id` will be replaced with the uuid of the file.
 - `CRON_PATTERN_DELTA_SYNC (default: 0 * * * * *)`: cron pattern at which the consumer needs to sync data automatically.
-- `START_FROM_DELTA_TIMESTAMP (ISO datetime, default: now)`: timestamp to start sync data from (e.g. "2020-07-05T13:57:
-  36.344Z") Only makes sense when initial ingest hasn't run.
+- `START_FROM_DELTA_TIMESTAMP (ISO datetime)`: timestamp to start sync data from (e.g. "2020-07-05T13:57:
+  36.344Z") Only required when initial ingest hasn't run.
 - `INGEST_GRAPH (default: http://mu.semte.ch/graphs/public)`: graph in which all insert changesets are ingested
 - `DISABLE_INITIAL_SYNC (default: false)`: flag to disable initial sync
 - `DISABLE_DELTA_INGEST (default: false)`: flag to disable data ingestion, for example while initializing the sync
@@ -66,42 +68,99 @@ The following environment variables are optional:
 - `BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES (default: false)`: (see code where it is called) This has repercussions you should know of!
 - `DIRECT_DATABASE_ENDPOINT (default: http://virtuoso:8890/sparql)`: only used when BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES is set to true
 - `KEEP_DELTA_FILES (default: false)`: if you want to keep the downloaded delta-files (ease of troubleshooting)
+- `BATCH_SIZE (default: 100)`: Size of the batches to ingest in DB
 ### Model
 
-#### Used prefixes
 
-| Prefix | URI                                                       |
-|--------|-----------------------------------------------------------|
-| dct    | http://purl.org/dc/terms/                                 |
-| adms   | http://www.w3.org/ns/adms#                                |
-| ext    | http://mu.semte.ch/vocabularies/ext                       |
+#### prefixes
+```
+  PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+  PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
+  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX prov: <http://www.w3.org/ns/prov#>
+  PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+  PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+  PREFIX oslc: <http://open-services.net/ns/core#>
+  PREFIX cogs: <http://vocab.deri.ie/cogs#>
+  PREFIX adms: <http://www.w3.org/ns/adms#>
+```
 
-#### Sync task
+#### Job
+The instance of a process or group of processes (workflow).
 
-##### Class
+##### class
+`cogs:Job`
 
-`ext:SyncTask`
+##### properties
 
-##### Properties
+Name | Predicate | Range | Definition
+--- | --- | --- | ---
+uuid |mu:uuid | xsd:string
+creator | dct:creator | rdfs:Resource
+status | adms:status | adms:Status
+created | dct:created | xsd:dateTime
+modified | dct:modified | xsd:dateTime
+jobType | task:operation | skos:Concept
+error | task:error | oslc:Error
 
-| Name       | Predicate        | Range           | Definition                                                                                                                                   |
-|------------|------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| status     | `adms:status`    | `adms:Status`   | Status of the sync task, initially set to `<http://lblod.data.gift/gelinkt-notuleren-mandatarissen-consumer-sync-task-statuses/not-started>` |
-| created    | `dct:created`    | `xsd:dateTime`  | Datetime of creation of the task                                                                                                             |
-| creator    | `dct:creator`    | `rdfs:Resource` | Creator of the task, in this case the mandatendatabank-consumer `<http://lblod.data.gift/services/gelinkt-notuleren-mandatarissen-consumer>` |
-| deltaUntil | `ext:deltaUntil` | `xsd:dateTime`  | Datetime of the latest successfully ingested sync file as part of the task execution                                                         |
+#### Task
+Subclass of `cogs:Job`
 
-#### Sync task statuses
+##### class
+`task:Task`
 
-The status of the sync task will be updated to reflect the progress of the task. The following statuses are known:
+##### properties
 
-* http://lblod.data.gift/gelinkt-notuleren-mandatarissen-consumer-sync-task-statuses/not-started
-* http://lblod.data.gift/gelinkt-notuleren-mandatarissen-consumer-sync-task-statuses/ongoing
-* http://lblod.data.gift/gelinkt-notuleren-mandatarissen-consumer-sync-task-statuses/success
-* http://lblod.data.gift/gelinkt-notuleren-mandatarissen-consumer-sync-task-statuses/failure
+Name | Predicate | Range | Definition
+--- | --- | --- | ---
+uuid |mu:uuid | xsd:string
+status | adms:status | adms:Status
+created | dct:created | xsd:dateTime
+modified | dct:modified | xsd:dateTime
+operation | task:operation | skos:Concept
+index | task:index | xsd:string | May be used for orderering. E.g. : '1', '2.1', '2.2', '3'
+error | task:error | oslc:Error
+parentTask| cogs:dependsOn | task:Task
+job | dct:isPartOf | rdfs:Resource | Refer to the parent job
+resultsContainer | task:resultsContainer | nfo:DataContainer | An generic type, optional
+inputContainer | task:inputContainer | nfo:DataContainer | An generic type, optional
+
+
+#### DataContainer
+A generic container gathering information about what has been processed. The consumer needs to determine how to handle it.
+The extensions created by this service are rather at hoc, i.e. `ext:` namespace
+See also: [job-controller-service](https://github.com/lblod/job-controller-service) for a more standardized use.
+
+##### class
+`nfo:DataContainer`
+
+##### properties
+
+Name | Predicate | Range | Definition
+--- | --- | --- | ---
+uuid |mu:uuid | xsd:string
+subject | dct:subject | skos:Concept | Provides some information about the content
+hasDeltafileTimestamp | ext:hasDeltafileTimestamp | timestamp from the processed deltafile
+hasDeltafileId |ext:hasDeltafileId | id from the processed deltafile
+hasDeltafileName |ext:hasDeltafileName | Name on disk about the processed deltafile
+
+#### Error
+
+##### class
+`oslc:Error`
+
+##### properties
+Name | Predicate | Range | Definition
+--- | --- | --- | ---
+uuid |mu:uuid | xsd:string
+message | oslc:message | xsd:string
 
 ### Data flow
+#### Initial sync
+Finds the latest dcat:Dataset a sync point to ingest. Once done, it proceeds in delta-sync mode.
+See also [delta-producer-dump-file-publisher](https://github.com/lblod/delta-producer-dump-file-publisher).
 
+#### Delta-sync
 At regular intervals, the service will schedule a sync task. Execution of a task consists of the following steps:
 
 1. Retrieve the timestamp to start the sync from
@@ -112,19 +171,42 @@ At regular intervals, the service will schedule a sync task. Execution of a task
 During the processing of a diff file, the insert and delete changesets are processed
 
 **Delete changeset**
-Apply a delete query triple per triple across all graphs
+Apply a delete query triple per triple in he graph `INGEST_GRAPH`.
 
 **Insert changeset**
 Ingest the changeset in the graph `INGEST_GRAPH`.
-
 
 If one file fails to be ingested, the remaining files in the queue are blocked since the files must always be handled in
 order.
 
 The service makes 2 core assumptions that must be respected at all times:
 
-1. At any moment we know that the latest `ext:deltaUntil` timestamp on a task, either in failed/ongoing/success state,
-   reflects the timestamp of the latest delta file that has been completly and successfully consumed
+1. At any moment we know that the latest `ext:hasDeltafileTimestamp` timestamp on the resultsContainer of a task OR if not found -because initial sync has been disabled- provided from 'START_FROM_DELTA_TIMESTAMP'
+   This reflects the timestamp of the latest delta file that has been completly and successfully consumed
 2. Maximum 1 sync task is running at any moment in time
 
-#### This implementation is a simplified fork of [gelinkt-notuleren-consumer](https://github.com/lblod/gelinkt-notuleren-consumer)
+### Migrating from 0.x.y to 1.a.b
+The model to keep track of the processed data changed.
+It is only required to provide `START_FROM_DELTA_TIMESTAMP` as a correct starting point.
+
+A migration is not required, but advised. The following options are:
+
+#### Cleaning up previous tasks
+In case it doesn't really make sense to keep this information.
+
+```
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+DELETE {
+  GRAPH ?g {
+    ?s ?p ?o.
+  }
+}
+WHERE {
+  ?s a ext:SyncTask.
+  GRAPH ?g {
+    ?s ?p ?o.
+  }
+}
+```
+#### Migrate ext:SyncTask to cogs:Job
+TODO...
