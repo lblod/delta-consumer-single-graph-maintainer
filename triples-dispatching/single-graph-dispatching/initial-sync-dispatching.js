@@ -8,11 +8,10 @@ const { BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES,
         INGEST_GRAPH
       } = require('./config');
 const { batchedDbUpdate } = require('./utils');
+const endpoint = BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES ? DIRECT_DATABASE_ENDPOINT : process.env.MU_SPARQL_ENDPOINT;x
 
 async function dispatch(lib, data){
   const { mu, muAuthSudo } = lib;
-
-  const endpoint = BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES ? DIRECT_DATABASE_ENDPOINT : process.env.MU_SPARQL_ENDPOINT;
 
   const triples = data.termObjects.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
 
