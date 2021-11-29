@@ -66,7 +66,8 @@ async function runDeltaSync() {
         console.log(`Ingesting deltafile created on ${deltaFile.created}`);
         const task = await createDeltaSyncTask(JOBS_GRAPH, job, `${index}`, STATUS_BUSY, deltaFile, parentTask);
         try {
-          await processDeltaFile(deltaFile);
+          const changeSets = await deltaFile.load();
+          await processDeltaFile(changeSets);
           await updateStatus(task, STATUS_SUCCESS);
           parentTask = task;
           console.log(`Sucessfully ingested deltafile created on ${deltaFile.created}`);
@@ -111,8 +112,7 @@ async function getSortedUnconsumedFiles(since) {
   }
 }
 
-async function processDeltaFile(deltaFile) {
-  const changeSets = await deltaFile.load();
+async function processDeltaFile(changeSets) {
   for (let { inserts, deletes } of changeSets) {
     const deleteStatements = deletes.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
     await batchedDbUpdate(INGEST_GRAPH,
