@@ -114,8 +114,9 @@ async function getSortedUnconsumedFiles(since) {
 async function processDeltaFile(deltaFile) {
   const changeSets = await deltaFile.load();
   for (let { inserts, deletes } of changeSets) {
+    const deleteStatements = deletes.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
     await batchedDbUpdate(INGEST_GRAPH,
-                          deletes,
+                          deleteStatements,
                           { },
                           process.env.MU_SPARQL_ENDPOINT, //Note: this is the default endpoint through auth
                           BATCH_SIZE,
@@ -124,9 +125,9 @@ async function processDeltaFile(deltaFile) {
                           SLEEP_TIME_AFTER_FAILED_DB_OPERATION,
                           "DELETE"
                          );
-
+    const insertStatements = inserts.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
     await batchedDbUpdate(INGEST_GRAPH,
-                          inserts,
+                          insertStatements,
                           { },
                           process.env.MU_SPARQL_ENDPOINT, //Note: this is the default endpoint through auth
                           BATCH_SIZE,
