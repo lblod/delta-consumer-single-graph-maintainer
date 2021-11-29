@@ -1,8 +1,8 @@
+import * as muAuthSudo from '@lblod/mu-auth-sudo';
+import * as mu from 'mu';
 import {
-    BATCH_SIZE, BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES,
-    DIRECT_DATABASE_ENDPOINT, DISABLE_INITIAL_SYNC, INGEST_GRAPH, INITIAL_SYNC_JOB_OPERATION,
-    JOBS_GRAPH, JOB_CREATOR_URI, MAX_DB_RETRY_ATTEMPTS, MU_CALL_SCOPE_ID_INITIAL_SYNC, SERVICE_NAME, SLEEP_BETWEEN_BATCHES,
-    SLEEP_TIME_AFTER_FAILED_DB_OPERATION
+    DISABLE_INITIAL_SYNC, INITIAL_SYNC_JOB_OPERATION,
+    JOBS_GRAPH, JOB_CREATOR_URI, SERVICE_NAME
 } from '../config';
 import { INITIAL_SYNC_TASK_OPERATION, STATUS_BUSY, STATUS_FAILED, STATUS_SCHEDULED, STATUS_SUCCESS } from '../lib/constants';
 import { createDeltaSyncTask } from '../lib/delta-sync-task';
@@ -10,10 +10,8 @@ import { getLatestDumpFile } from '../lib/dump-file';
 import { createError, createJobError } from '../lib/error';
 import { createJob, getLatestJobForOperation } from '../lib/job';
 import { createTask } from '../lib/task';
-import { batchedDbUpdate, updateStatus } from '../lib/utils';
+import { updateStatus } from '../lib/utils';
 import { initialSyncDispatching } from '../triples-dispatching';
-import  * as mu from 'mu';
-import  * as muAuthSudo from '@lblod/mu-auth-sudo';
 
 export async function startInitialSync() {
   try {

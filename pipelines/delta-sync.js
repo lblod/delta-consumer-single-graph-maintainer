@@ -1,8 +1,9 @@
+import * as muAuthSudo from '@lblod/mu-auth-sudo';
+import * as mu from 'mu';
 import fetch from 'node-fetch';
 import {
-    BATCH_SIZE, DELTA_SYNC_JOB_OPERATION, DISABLE_DELTA_INGEST, INGEST_GRAPH, INITIAL_SYNC_JOB_OPERATION,
-    JOBS_GRAPH, JOB_CREATOR_URI, MAX_DB_RETRY_ATTEMPTS, SERVICE_NAME, SLEEP_BETWEEN_BATCHES,
-    SLEEP_TIME_AFTER_FAILED_DB_OPERATION, SYNC_FILES_ENDPOINT, WAIT_FOR_INITIAL_SYNC
+    DELTA_SYNC_JOB_OPERATION, DISABLE_DELTA_INGEST, INITIAL_SYNC_JOB_OPERATION,
+    JOBS_GRAPH, JOB_CREATOR_URI, SERVICE_NAME, SYNC_FILES_ENDPOINT, WAIT_FOR_INITIAL_SYNC
 } from '../config';
 import { STATUS_BUSY, STATUS_FAILED, STATUS_SUCCESS } from '../lib/constants';
 import DeltaFile from '../lib/delta-file';
@@ -10,10 +11,8 @@ import { calculateLatestDeltaTimestamp } from '../lib/delta-sync-job';
 import { createDeltaSyncTask } from '../lib/delta-sync-task';
 import { createError, createJobError } from '../lib/error';
 import { createJob, failJob, getJobs, getLatestJobForOperation } from '../lib/job';
-import { batchedDbUpdate, updateStatus } from '../lib/utils';
+import { updateStatus } from '../lib/utils';
 import { deltaSyncDispatching } from '../triples-dispatching';
-import  * as mu from 'mu';
-import  * as muAuthSudo from '@lblod/mu-auth-sudo';
 
 export async function startDeltaSync() {
   try {
