@@ -11,6 +11,9 @@ import { createDeltaSyncTask } from '../lib/delta-sync-task';
 import { createError, createJobError } from '../lib/error';
 import { createJob, failJob, getJobs, getLatestJobForOperation } from '../lib/job';
 import { batchedDbUpdate, updateStatus } from '../lib/utils';
+import { deltaSyncDispatching } from '../triples-dispatching';
+import  * as mu from 'mu';
+import  * as muAuthSudo from '@lblod/mu-auth-sudo';
 
 export async function startDeltaSync() {
   try {
@@ -67,7 +70,7 @@ async function runDeltaSync() {
         const task = await createDeltaSyncTask(JOBS_GRAPH, job, `${index}`, STATUS_BUSY, deltaFile, parentTask);
         try {
           const changeSets = await deltaFile.load();
-          await processDeltaFile(changeSets);
+          await deltaSyncDispatching.dispatch({ mu, muAuthSudo }, { changeSets });
           await updateStatus(task, STATUS_SUCCESS);
           parentTask = task;
           console.log(`Sucessfully ingested deltafile created on ${deltaFile.created}`);
@@ -109,32 +112,5 @@ async function getSortedUnconsumedFiles(since) {
   } catch (e) {
     console.log(`Unable to retrieve unconsumed files from ${SYNC_FILES_ENDPOINT}`);
     throw e;
-  }
-}
-
-async function processDeltaFile(changeSets) {
-  for (let { inserts, deletes } of changeSets) {
-    const deleteStatements = deletes.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
-    await batchedDbUpdate(INGEST_GRAPH,
-                          deleteStatements,
-                          { },
-                          process.env.MU_SPARQL_ENDPOINT, //Note: this is the default endpoint through auth
-                          BATCH_SIZE,
-                          MAX_DB_RETRY_ATTEMPTS,
-                          SLEEP_BETWEEN_BATCHES,
-                          SLEEP_TIME_AFTER_FAILED_DB_OPERATION,
-                          "DELETE"
-                         );
-    const insertStatements = inserts.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
-    await batchedDbUpdate(INGEST_GRAPH,
-                          insertStatements,
-                          { },
-                          process.env.MU_SPARQL_ENDPOINT, //Note: this is the default endpoint through auth
-                          BATCH_SIZE,
-                          MAX_DB_RETRY_ATTEMPTS,
-                          SLEEP_BETWEEN_BATCHES,
-                          SLEEP_TIME_AFTER_FAILED_DB_OPERATION,
-                          "INSERT"
-                         );
   }
 }
