@@ -7,7 +7,7 @@ const { BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES,
         SLEEP_TIME_AFTER_FAILED_DB_OPERATION,
         INGEST_GRAPH
       } = require('./config');
-const { batchedDbUpdate } = require('./utils');;
+const { batchedDbUpdate } = require('./utils');
 
 async function dispatch(lib, data){
   const { mu, muAuthSudo } = lib;
