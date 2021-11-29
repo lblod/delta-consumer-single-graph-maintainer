@@ -11,6 +11,9 @@ import { createError, createJobError } from '../lib/error';
 import { createJob, getLatestJobForOperation } from '../lib/job';
 import { createTask } from '../lib/task';
 import { batchedDbUpdate, updateStatus } from '../lib/utils';
+import { initialSyncDispatching } from '../triples-dispatching';
+import  * as mu from 'mu';
+import  * as muAuthSudo from '@lblod/mu-auth-sudo';
 
 export async function startInitialSync() {
   try {
@@ -54,24 +57,9 @@ async function runInitialSync() {
     if (dumpFile) {
 
       await updateStatus(task, STATUS_BUSY);
-      const triples = await dumpFile.load();
+      const termObjects = await dumpFile.load();
 
-      const endpoint = BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES ? DIRECT_DATABASE_ENDPOINT : process.env.MU_SPARQL_ENDPOINT;
-
-      if(BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES){
-        console.warn(`Service configured to skip MU_AUTH!`);
-      }
-      console.log(`Using ${endpoint} to insert triples`);
-
-      await batchedDbUpdate(INGEST_GRAPH,
-                            triples,
-                          { 'mu-call-scope-id': MU_CALL_SCOPE_ID_INITIAL_SYNC },
-                          endpoint,
-                          BATCH_SIZE,
-                          MAX_DB_RETRY_ATTEMPTS,
-                          SLEEP_BETWEEN_BATCHES,
-                          SLEEP_TIME_AFTER_FAILED_DB_OPERATION,
-                         );
+      await initialSyncDispatching.dispatch({ mu, muAuthSudo }, { termObjects });
 
       await updateStatus(task, STATUS_SUCCESS);
     }
