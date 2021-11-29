@@ -10,6 +10,20 @@ const { BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES,
 const { batchedDbUpdate } = require('./utils');
 const endpoint = BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES ? DIRECT_DATABASE_ENDPOINT : process.env.MU_SPARQL_ENDPOINT;
 
+
+/**
+ * Dispatch the fetched information to a target graph.
+ * @param { mu, muAuthSudo } lib - The provided libraries from the host service.
+ * @param { changeSets: { deleteTermObjects, insertTermObjects } } data - The fetched changes sets, which objects of serialized Terms
+ *          [ {
+ *              graph: "<http://foo>",
+ *              subject: "<http://bar>",
+ *              predicate: "<http://baz>",
+ *              object: "<http://boom>^^<http://datatype>"
+ *            }
+ *         ]
+ * @return {void} Nothing
+ */
 async function dispatch(lib, data){
   const { mu, muAuthSudo } = lib;
   const { changeSets } =  data;
