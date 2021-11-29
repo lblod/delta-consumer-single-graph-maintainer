@@ -37,7 +37,7 @@ export async function startDeltaSync() {
         const jobs = await getJobs(DELTA_SYNC_JOB_OPERATION, [ STATUS_BUSY ]);
         console.log(`Found ${jobs.length} hanging jobs, failing them first`);
         for(const job of jobs){
-          await failJob(job);
+          await failJob(job.job);
         }
 
         await runDeltaSync();
