@@ -23,12 +23,12 @@ Add the following to your `docker-compose.yml`:
 consumer:
   image: lblod/delta-consumer-single-graph-maintainer
   environment:
-    _SERVICE_NAME: 'your-custom-consumer-identifier' # replace with the desired consumer identifier
-    _SYNC_BASE_URL: 'http://base-sync-url # replace with link the application hosting the producer server
-    _SYNC_DATASET_SUBJECT: "http://data.lblod.info/datasets/delta-producer/dumps/CacheGraphDump"
-    _INITIAL_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzInitialSync"
-    _DELTA_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzDeltaFileSyncing"
-    _JOB_CREATOR_URI: "http://data.lblod.info/services/id/consumer"
+    DCR_SERVICE_NAME: 'your-custom-consumer-identifier' # replace with the desired consumer identifier
+    DCR_SYNC_BASE_URL: 'http://base-sync-url # replace with link the application hosting the producer server
+    DCR_SYNC_DATASET_SUBJECT: "http://data.lblod.info/datasets/delta-producer/dumps/CacheGraphDump"
+    DCR_INITIAL_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzInitialSync"
+    DCR_DELTA_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzDeltaFileSyncing"
+    DCR_JOB_CREATOR_URI: "http://data.lblod.info/services/id/consumer"
     INGEST_GRAPH: 'http://uri/of/the/graph/to/ingest/the/information'
 ```
 
@@ -42,12 +42,12 @@ For your convenience, we've added an example custom hook in `./triples-dispatchi
   consumer:
     image: lblod/delta-consumer-single-graph-maintainer
     environment:
-      _SERVICE_NAME: 'your-custom-consumer-identifier' # replace with the desired consumer identifier
-      _SYNC_BASE_URL: 'http://base-sync-url # replace with link the application hosting the producer server
-      _SYNC_DATASET_SUBJECT: "http://data.lblod.info/datasets/delta-producer/dumps/CacheGraphDump"
-      _INITIAL_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzInitialSync"
-      _DELTA_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzDeltaFileSyncing"
-      _JOB_CREATOR_URI: "http://data.lblod.info/services/id/consumer"
+      DCR_SERVICE_NAME: 'your-custom-consumer-identifier' # replace with the desired consumer identifier
+      DCR_SYNC_BASE_URL: 'http://base-sync-url # replace with link the application hosting the producer server
+      DCR_SYNC_DATASET_SUBJECT: "http://data.lblod.info/datasets/delta-producer/dumps/CacheGraphDump"
+      DCR_INITIAL_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzInitialSync"
+      DCR_DELTA_SYNC_JOB_OPERATION: "http://redpencil.data.gift/id/jobs/concept/JobOperation/deltas/consumer/xyzDeltaFileSyncing"
+      DCR_JOB_CREATOR_URI: "http://data.lblod.info/services/id/consumer"
     volumes:
       - ./config/consumer/example-custom-dispatching:/config/triples-dispatching/custom-dispatching
   ```
@@ -60,33 +60,33 @@ Please read further to find out more about the API of the hooks.
 #### What's with the weird variables names?
 When accessing `process.env`, we distinguish between core service environment variables and triples-dispatching variables.
 
-Variables prefixed with `_` belong to the core. 
+Variables prefixed with `DCR_` belong to the core. `DCR` could be an abbreviation for `delta-consumer`.
 Custom logic for triples-dispatching should not access these directly, at the risk of breaking if the service evolves.
 If you want to extend the variables in the core, make sure to respect the convention.
 
 #### Core
 The following environment variables are required:
 
-- `_SERVICE_NAME`: consumer identifier. important as it is used to ensure persistence. The identifier should be unique within the project. [REQUIRED]
-- `_SYNC_BASE_URL`: Base URL of the stack hosting the producer API [REQUIRED]
-- `_JOB_CREATOR_URI`: URL of the creator of the sync jobs [REQUIRED]
-- `_DELTA_SYNC_JOB_OPERATION`: Job operation of the delta sync job, used to describe the created jobs [REQUIRED]
-- `_SYNC_DATASET_SUBJECT`: subject used when fetching the dataset [REQUIRED BY DEFAULT]
-- `_INITIAL_SYNC_JOB_OPERATION`: Job operation of the initial sync job, used to describe the created jobs [REQUIRED BY DEFAULT]
+- `DCR_SERVICE_NAME`: consumer identifier. important as it is used to ensure persistence. The identifier should be unique within the project. [REQUIRED]
+- `DCR_SYNC_BASE_URL`: Base URL of the stack hosting the producer API [REQUIRED]
+- `DCR_JOB_CREATOR_URI`: URL of the creator of the sync jobs [REQUIRED]
+- `DCR_DELTA_SYNC_JOB_OPERATION`: Job operation of the delta sync job, used to describe the created jobs [REQUIRED]
+- `DCR_SYNC_DATASET_SUBJECT`: subject used when fetching the dataset [REQUIRED BY DEFAULT]
+- `DCR_INITIAL_SYNC_JOB_OPERATION`: Job operation of the initial sync job, used to describe the created jobs [REQUIRED BY DEFAULT]
 
-To overrule the last two default required settings, and thus just ingest delta files, set `_WAIT_FOR_INITIAL_SYNC: false` and `_DISABLE_INITIAL_SYNC: true`.
+To overrule the last two default required settings, and thus just ingest delta files, set `DCR_WAIT_FOR_INITIAL_SYNC: false` and `DCR_DISABLE_INITIAL_SYNC: true`.
 
 The following environment variables are optional:
 
-- `_SYNC_FILES_PATH (default: /sync/files)`: relative path to the endpoint to retrieve the meta-data from the diff-files. Note: often, you will need to change this one.
-- `_DOWNLOAD_FILES_PATH (default: /files/:id/download)`: relative path to the endpoint to download a diff file
+- `DCR_SYNC_FILES_PATH (default: /sync/files)`: relative path to the endpoint to retrieve the meta-data from the diff-files. Note: often, you will need to change this one.
+- `DCR_DOWNLOAD_FILES_PATH (default: /files/:id/download)`: relative path to the endpoint to download a diff file
   from. `: id` will be replaced with the UUID of the file.
-- `_CRON_PATTERN_DELTA_SYNC (default: 0 * * * * *)`: cron pattern at which the consumer needs to sync data automatically.
-- `_START_FROM_DELTA_TIMESTAMP (ISO DateTime)`: timestamp to start sync data from (e.g. "2020-07-05T13:57:36.344Z") Only required when initial ingest hasn't run.
-- `_DISABLE_INITIAL_SYNC (default: false)`: flag to disable initial sync
-- `_DISABLE_DELTA_INGEST (default: false)`: flag to disable data ingestion, for example, while initializing the sync
-- `_WAIT_FOR_INITIAL_SYNC (default: true)`: flag to not wait for initial ingestion (meant for debugging)
-- `_KEEP_DELTA_FILES (default: false)`: if you want to keep the downloaded delta-files (ease of troubleshooting)
+- `DCR_CRON_PATTERN_DELTA_SYNC (default: 0 * * * * *)`: cron pattern at which the consumer needs to sync data automatically.
+- `DCR_START_FROM_DELTA_TIMESTAMP (ISO DateTime)`: timestamp to start sync data from (e.g. "2020-07-05T13:57:36.344Z") Only required when initial ingest hasn't run.
+- `DCR_DISABLE_INITIAL_SYNC (default: false)`: flag to disable initial sync
+- `DCR_DISABLE_DELTA_INGEST (default: false)`: flag to disable data ingestion, for example, while initializing the sync
+- `DCR_WAIT_FOR_INITIAL_SYNC (default: true)`: flag to not wait for initial ingestion (meant for debugging)
+- `DCR_KEEP_DELTA_FILES (default: false)`: if you want to keep the downloaded delta-files (ease of troubleshooting)
 
 #### Triples dispatching: single graph ingestion (default behaviour)
 - `INGEST_GRAPH (default: http://mu.semte.ch/graphs/public)`: graph in which all insert changesets are ingested
@@ -211,13 +211,13 @@ If the ingestion of one file fails, the service will block the queued files. The
 
 The service makes two core assumptions that must be respected at all times:
 
-1. At any moment, we know that the latest `ext:hasDeltafileTimestamp` timestamp on the resultsContainer of a task OR if not found -because initial sync has been disabled- provided from '_START_FROM_DELTA_TIMESTAMP'
+1. At any moment, we know that the latest `ext:hasDeltafileTimestamp` timestamp on the resultsContainer of a task OR if not found -because initial sync has been disabled- provided from `DCR_START_FROM_DELTA_TIMESTAMP`
    This reflects the timestamp of the latest delta file that has been completely and successfully consumed.
 2. Maximum 1 sync task is running at any moment in time
 
 ### Migrating from  [delta-consumer-single-graph-maintainer](https://github.com/lblod/delta-consumer-single-graph-maintainer) to this service
 The model to keep track of the processed data changed.
-It is only required to provide `_START_FROM_DELTA_TIMESTAMP` as a correct starting point.
+It is only required to provide `DCR_START_FROM_DELTA_TIMESTAMP` as a correct starting point.
 
 Migrating is not required but advised. The following options are:
 
