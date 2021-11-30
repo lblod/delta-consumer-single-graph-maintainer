@@ -6,12 +6,16 @@ const deltaSyncDispatching = tryLoadModule('/config/triples-dispatching/custom-d
 function tryLoadModule(targetModulePath, fallbackModulePath){
   try {
     const module = require(targetModulePath);
+    console.log(`[***************************************************]`);
     console.log(`Custom dispatching logic found on ${targetModulePath}`);
+    console.log(`[***************************************************]`);
     return module;
   }
   catch(e) {
     if(e.code && e.code.toLowerCase() == 'MODULE_NOT_FOUND'.toLowerCase()){
+      console.log(`[!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]`);
       console.warn(`${targetModulePath} not found, assuming default behaviour loaded on ${fallbackModulePath}`);
+      console.log(`[!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]`);
       return require(fallbackModulePath);
     }
     else {
