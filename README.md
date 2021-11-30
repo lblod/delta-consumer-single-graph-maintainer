@@ -266,7 +266,7 @@ A function with signature `dispatch(lib, data)` should be exported. The document
 A function with signature `dispatch(lib, data)` should be exported. The documentation states:
 ```
  * @param { mu, muAuthSudo } lib - The provided libraries from the host service.
- * @param { changeSets: { deleteTermObjects, insertTermObjects } } data - The fetched changes sets, which objects of serialized Terms
+ * @param { termObjectChangeSets: { deletes, inserts } } data - The fetched changes sets, which objects of serialized Terms
  *          [ {
  *              graph: "<http://foo>",
  *              subject: "<http://bar>",
@@ -278,10 +278,10 @@ A function with signature `dispatch(lib, data)` should be exported. The document
  */
 ```
 #### Extra notes
-The API is deliberately limited. We provide a minimal toolset to CRUD the database, which limits the chances we don't regret our choices later and break existing implementations.
+- The API is deliberately limited. We provide a minimal toolset to CRUD the database, which limits the chances we don't regret our choices later and break existing implementations.
 Hence, only `mu, muAuthSudo ` are provided for now. Adding libraries should be done under careful consideration. (It is still extendable)
 
-Custom triples-dispatching allow their environment variables. Make sure to respect the convention, to differentiate core from custom.
+- Custom triples-dispatching allow their environment variables. Make sure to respect the convention, to differentiate core from custom.
 As an inspiration, check `single-graph-dispatching` for complex dispatching rules.
 
-Currently, `import` statements don't work in custom triples-dispatching. Hence you will have to stay in the `require` world.
+- Currently, `import` statements don't work in custom triples-dispatching. Hence you will have to stay in the `require` world.

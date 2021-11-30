@@ -14,7 +14,7 @@ const endpoint = BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES ? DIRECT_DATABASE_ENDPOINT
 /**
  * Dispatch the fetched information to a target graph.
  * @param { mu, muAuthSudo } lib - The provided libraries from the host service.
- * @param { changeSets: { deleteTermObjects, insertTermObjects } } data - The fetched changes sets, which objects of serialized Terms
+ * @param { termObjectChangeSets: { deletes, inserts } } data - The fetched changes sets, which objects of serialized Terms
  *          [ {
  *              graph: "<http://foo>",
  *              subject: "<http://bar>",
@@ -26,10 +26,10 @@ const endpoint = BYPASS_MU_AUTH_FOR_EXPENSIVE_QUERIES ? DIRECT_DATABASE_ENDPOINT
  */
 async function dispatch(lib, data){
   const { mu, muAuthSudo } = lib;
-  const { changeSets } =  data;
+  const { termObjectChangeSets } =  data;
 
-  for (let { deleteTermObjects, insertTermObjects } of changeSets) {
-    const deleteStatements = deleteTermObjects.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
+  for (let { deletes, inserts } of termObjectChangeSets) {
+    const deleteStatements = deletes.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
     await batchedDbUpdate(
       muAuthSudo.updateSudo,
       INGEST_GRAPH,
@@ -42,7 +42,7 @@ async function dispatch(lib, data){
       SLEEP_TIME_AFTER_FAILED_DB_OPERATION,
       "DELETE"
      );
-    const insertStatements = insertTermObjects.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
+    const insertStatements = inserts.map(o => `${o.subject} ${o.predicate} ${o.object}.`);
     await batchedDbUpdate(
       muAuthSudo.updateSudo,
       INGEST_GRAPH,

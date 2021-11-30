@@ -68,8 +68,8 @@ async function runDeltaSync() {
         console.log(`Ingesting deltafile created on ${deltaFile.created}`);
         const task = await createDeltaSyncTask(JOBS_GRAPH, job, `${index}`, STATUS_BUSY, deltaFile, parentTask);
         try {
-          const changeSets = await deltaFile.load();
-          await deltaSyncDispatching.dispatch({ mu, muAuthSudo }, { changeSets });
+          const termObjectChangeSets = await deltaFile.load();
+          await deltaSyncDispatching.dispatch({ mu, muAuthSudo }, { termObjectChangeSets });
           await updateStatus(task, STATUS_SUCCESS);
           parentTask = task;
           console.log(`Sucessfully ingested deltafile created on ${deltaFile.created}`);
